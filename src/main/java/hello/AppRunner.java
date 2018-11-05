@@ -2,6 +2,7 @@ package hello;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,9 @@ public class AppRunner implements CommandLineRunner {
 
     private final GitHubLookupService gitHubLookupService;
 
+    @Autowired
+    Service service;
+
     public AppRunner(GitHubLookupService gitHubLookupService) {
         this.gitHubLookupService = gitHubLookupService;
     }
@@ -23,6 +27,7 @@ public class AppRunner implements CommandLineRunner {
         // Start the clock
         long start = System.currentTimeMillis();
 
+        service.method("imprimiu na thread principal");
         // Kick of multiple, asynchronous lookups
         CompletableFuture<User> page1 = gitHubLookupService.findUser("PivotalSoftware");
         System.out.println("passou o primeiro");
@@ -33,14 +38,13 @@ public class AppRunner implements CommandLineRunner {
         CompletableFuture<User> page4 = gitHubLookupService.findUser("wdouglascosta");
         System.out.println("passou o quarto");
 
-
-        CompletableFuture<String> text = gitHubLookupService.laco("primeiro laco");
+        CompletableFuture<String> text = gitHubLookupService.laco("primeiro laco",500);
         System.out.println("------------------");
-        gitHubLookupService.laco("segundo laco");
+        gitHubLookupService.laco("segundo laco",5000);
 
 
         // Wait until they are all done
-        CompletableFuture.allOf(page1,page2,page3,page4,text).join();
+        CompletableFuture.allOf(page1,page2,page3,page4).join();
 
         // Print results, including elapsed time
         logger.info("Elapsed time: " + (System.currentTimeMillis() - start));

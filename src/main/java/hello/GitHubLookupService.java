@@ -2,6 +2,7 @@ package hello;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class GitHubLookupService {
     private static final Logger logger = LoggerFactory.getLogger(GitHubLookupService.class);
 
     private final RestTemplate restTemplate;
+
+    @Autowired
+    private hello.Service service;
 
     public GitHubLookupService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
@@ -34,17 +38,18 @@ public class GitHubLookupService {
     }
 
     @Async
-    public CompletableFuture<String> laco(String text){
+    public CompletableFuture<String> laco(String text, int ms){
         int a = 0;
-        while (a <= 5){
+        while (a <= 25){
             logger.info(a + " - " + text);
             try {
-                Thread.sleep(1500L);
+                Thread.sleep(ms);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             a++;
         }
+        service.method("imprimiu na thread: " + Thread.currentThread().getName());
         return CompletableFuture.completedFuture("fim - " + text);
     }
 
